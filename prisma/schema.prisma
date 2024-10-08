@@ -12,17 +12,18 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 model User {
-  id    String @id @default(uuid())
-  name  String
-  email String
-  posts Post[]
+  id        Int     @id @default(autoincrement()) // Unique identifier for each user
+  name      String  // Name of the user
+  email     String  @unique // Unique email for the user
+  posts     Post[]  @relation("UserPosts") // One-to-many relationship with Post
+  following User[]  @relation("UserFollows") // Many-to-many relationship with other Users
+  followers User[]  @relation("UserFollows") // Many-to-many relationship with other Users
 }
-
 model Post {
-  id    String @id @default(uuid())
-  title String
-  userId String
-  user User @relation(fields: [userId], references: [id])
+  id        Int    @id @default(autoincrement()) // Unique identifier for each post
+  title     String // Title of the post
+  content   String // Content of the post
+  authorId  Int // Foreign key to associate a post with its author
+  author    User   @relation("UserPosts", fields: [authorId], references: [id]) // One-to-many relationship with User
 }
